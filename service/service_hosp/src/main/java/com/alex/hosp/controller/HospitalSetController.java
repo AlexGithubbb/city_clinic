@@ -8,6 +8,7 @@ import com.alex.model.hosp.HospitalSet;
 import com.alex.vo.hosp.HospitalSetQueryVo;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import org.apache.ibatis.annotations.Delete;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
@@ -59,7 +60,6 @@ public class HospitalSetController {
         String hosname="";
         String hoscode="";
         if(hospitalSetQueryVo != null){
-
            hosname = hospitalSetQueryVo.getHosname();
            hoscode = hospitalSetQueryVo.getHoscode();
         }
@@ -104,6 +104,33 @@ public class HospitalSetController {
         System.out.println("inserted? " + save);
 
         return Result.flag(save);
+    }
+
+
+    // 5 根据ID获取医院设置
+    @GetMapping("/{id}")
+    public Result getHospSet(@PathVariable Long id){
+        HospitalSet hospitalSet = hospitalSetService.getById(id);
+        if(hospitalSet==null){return Result.fail("data not found!");}
+        return Result.ok(hospitalSet);
+    }
+
+    // 6 修改医院设置
+    @PutMapping("/update")
+    public Result updateHospSet(@RequestBody HospitalSet hospitalSet){
+
+        if(hospitalSet==null){return Result.fail("data not found!");}
+        hospitalSetService.updateById(hospitalSet);
+        return Result.ok(hospitalSet);
+    }
+
+
+    // 7 批量删除医院设置
+    @DeleteMapping("/batch")
+    public Result batchRemove(@RequestBody List<Long> ids){
+
+        boolean remove = hospitalSetService.removeByIds(ids);
+        return Result.flag(remove);
     }
 
 }
