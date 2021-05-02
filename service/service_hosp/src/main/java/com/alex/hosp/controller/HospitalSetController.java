@@ -133,4 +133,31 @@ public class HospitalSetController {
         return Result.flag(remove);
     }
 
+    // 设置医院是否可用
+    @PutMapping("/lock")
+    public Result setLockStatus(@RequestBody HospitalSet hospitalSet){
+
+        Integer status = hospitalSet.getStatus();
+
+        if(status == 0 || status == 1){
+            HospitalSet hospitalSet1 = hospitalSetService.getById(hospitalSet.getId());
+            hospitalSet1.setStatus(status);
+            boolean b = hospitalSetService.updateById(hospitalSet1);
+            return Result.ok(b);
+        }else{
+            return Result.fail("plz double confirm if status code is valid");
+        }
+    }
+
+    // Send message feature
+    @PutMapping("/sendKey/{id}")
+    public Result sendKey(@PathVariable Long id){
+        HospitalSet hospitalSet = hospitalSetService.getById(id);
+        String signKey = hospitalSet.getSignKey();
+        String hoscode = hospitalSet.getHoscode();
+
+        // TODO 发送短信
+        return Result.ok();
+    }
+
 }
