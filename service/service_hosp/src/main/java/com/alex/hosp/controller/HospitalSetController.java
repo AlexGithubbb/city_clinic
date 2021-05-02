@@ -2,6 +2,7 @@ package com.alex.hosp.controller;
 
 
 import com.alex.common.result.Result;
+import com.alex.common.utils.MD5;
 import com.alex.hosp.service.HospitalSetService;
 import com.alex.model.hosp.HospitalSet;
 import com.alex.vo.hosp.HospitalSetQueryVo;
@@ -10,7 +11,9 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
+
 import java.util.List;
+import java.util.Random;
 
 @RestController
 @RequestMapping("/admin/hosp/hospitalSet")
@@ -80,6 +83,27 @@ public class HospitalSetController {
 
         return Result.ok(page);
 
+    }
+
+    @PostMapping("/save")
+    public Result addHospSet(@RequestBody HospitalSet hospitalSet){
+
+        // 后台设置初始状态 1=可用 0=不可用
+        hospitalSet.setStatus(1);
+
+        // 后台设置密钥
+        Random random = new Random();
+
+        String s = System.currentTimeMillis() + "" + random.nextInt(1000);
+        String encrypt = MD5.encrypt(s);
+
+        hospitalSet.setSignKey(encrypt);
+
+        boolean save = hospitalSetService.save(hospitalSet);
+
+        System.out.println("inserted? " + save);
+
+        return Result.flag(save);
     }
 
 }
