@@ -1,6 +1,7 @@
 package com.alex.hosp.controller;
 
 
+import com.alex.common.exception.MyException;
 import com.alex.common.result.Result;
 import com.alex.common.utils.MD5;
 import com.alex.hosp.service.HospitalSetService;
@@ -158,6 +159,16 @@ public class HospitalSetController {
 
         // TODO 发送短信
         return Result.ok();
+    }
+
+    // 测试自定义异常信息
+    @GetMapping("/error")
+    public void testException(){
+        try {
+            int i = 1 / 0;
+        }catch (Exception e){
+            throw new MyException("/ by zero",201);
+        }
     }
 
 }
