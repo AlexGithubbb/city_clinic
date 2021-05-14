@@ -9,7 +9,7 @@ import lombok.Data;
  * Dict
  * </p>
  *
- * @author qy
+ * @author alex
  */
 @Data
 public class DictEeVo {
