@@ -1,10 +1,7 @@
 package com.alex.model.cmn;
 
-import com.alibaba.excel.annotation.ExcelProperty;
 import com.baomidou.mybatisplus.annotation.*;
 import com.fasterxml.jackson.annotation.JsonFormat;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
 import java.util.Date;
@@ -35,7 +32,7 @@ public class Dict {
 
     @TableLogic
     @TableField("is_deleted")
-    private Integer isDeleted;
+    private Integer isDeleted = 0; // default value is 1, need to initialize with 0 (not deleted)
 
     @TableField(exist = false)
     private Map<String,Object> param = new HashMap<>();

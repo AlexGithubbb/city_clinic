@@ -1,5 +1,6 @@
 package com.alex.cmn.service.impl;
 
+import com.alex.cmn.listener.DictListener;
 import com.alex.cmn.mapper.DictMapper;
 import com.alex.cmn.service.DictService;
 import com.alex.model.cmn.Dict;
@@ -7,13 +8,12 @@ import com.alex.vo.cmn.DictEeVo;
 import com.alibaba.excel.EasyExcel;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.fasterxml.jackson.databind.util.BeanUtil;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.List;
@@ -67,6 +67,15 @@ public class DictServiceImpl extends ServiceImpl<DictMapper, Dict> implements Di
             }
             // 调用方法进行写操作
             EasyExcel.write(response.getOutputStream(), DictEeVo.class).sheet("数据字典").doWrite(dictEeVos);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Override
+    public void importData(MultipartFile file) {
+        try {
+            EasyExcel.read(file.getInputStream(), DictEeVo.class, new DictListener(baseMapper)).sheet().doRead();
         } catch (IOException e) {
             e.printStackTrace();
         }
