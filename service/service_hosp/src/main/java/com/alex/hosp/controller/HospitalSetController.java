@@ -9,7 +9,6 @@ import com.alex.model.hosp.HospitalSet;
 import com.alex.vo.hosp.HospitalSetQueryVo;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import org.apache.ibatis.annotations.Delete;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
@@ -136,15 +135,14 @@ public class HospitalSetController {
     }
 
     // 设置医院是否可用
-    @PutMapping("/lock")
-    public Result setLockStatus(@RequestBody HospitalSet hospitalSet){
-
-        Integer status = hospitalSet.getStatus();
+    @PutMapping("/lock/{id}/{status}")
+//    public Result setLockStatus(@RequestBody HospitalSet hospitalSet){
+    public Result setLockStatus(@PathVariable("id") Long id, @PathVariable("status") Integer status){
 
         if(status == 0 || status == 1){
-            HospitalSet hospitalSet1 = hospitalSetService.getById(hospitalSet.getId());
-            hospitalSet1.setStatus(status);
-            boolean b = hospitalSetService.updateById(hospitalSet1);
+            HospitalSet hospitalSet = hospitalSetService.getById(id);
+            hospitalSet.setStatus(status);
+            boolean b = hospitalSetService.updateById(hospitalSet);
             return Result.ok(b);
         }else{
             return Result.fail("plz double confirm if status code is valid");
