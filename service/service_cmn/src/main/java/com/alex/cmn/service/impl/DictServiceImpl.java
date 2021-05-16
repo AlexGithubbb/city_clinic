@@ -9,6 +9,8 @@ import com.alibaba.excel.EasyExcel;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.beans.BeanUtils;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -22,16 +24,20 @@ import java.util.List;
 public class DictServiceImpl extends ServiceImpl<DictMapper, Dict> implements DictService {
 
     // doesn't need to inject DictMapper here, since baseMapper already been injected from ServiceImpl
+    /**
+     * 根据上级id获取子节点数据列表
+     * @param parentId
+     */
+    @Cacheable(value = "dict", keyGenerator = "keyGenerator")
     @Override
-    public List<Dict> getChildrenData(Long id){
+    public List<Dict> getChildrenData(Long parentId){
 
         QueryWrapper<Dict> wrapper = new QueryWrapper<>();
-        wrapper.eq("parent_id", id);
+        wrapper.eq("parent_id", parentId);
         List<Dict> children = baseMapper.selectList(wrapper);
 
         for (Dict child : children) {
-            Long parentId = child.getId();
-            Boolean hasChildren = hasChildren(parentId);
+            Boolean hasChildren = hasChildren(child.getId());
             child.setHasChildren(hasChildren);
         }
         return children;
@@ -72,6 +78,12 @@ public class DictServiceImpl extends ServiceImpl<DictMapper, Dict> implements Di
         }
     }
 
+    /**
+     * 导入
+     * allEntries = true: 方法调用后清空所有缓存
+     * @param file
+     */
+    @CacheEvict(value = "dict", allEntries=true)
     @Override
     public void importData(MultipartFile file) {
         try {
